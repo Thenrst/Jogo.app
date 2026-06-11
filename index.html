@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1b4332">
+<title>Garden Dreams</title>
+<style>
+/* ── RESET ───────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,'Segoe UI',Roboto,sans-serif}
+body{touch-action:none;user-select:none;-webkit-user-select:none;background:#0a1a10}
+
+/* ── SCREEN SYSTEM ───────────────────────────────────────────── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME SCREEN
+═══════════════════════════════════════════════════════════════ */
+#s-home{
+  background:linear-gradient(170deg,#0d2818 0%,#1b4332 45%,#2d6a4f 80%,#52b788 100%);
+  justify-content:space-between;padding:0;overflow:hidden;
+}
+.home-bg-stars{position:absolute;inset:0;pointer-events:none}
+.hstar{
+  position:absolute;background:#fff;border-radius:50%;
+  animation:twinkle var(--d) ease-in-out infinite var(--del);
+}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.9;transform:scale(1.4)}}
+
+.home-top{
+  width:100%;flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;padding-top:40px;
+}
+.home-logo-flowers{font-size:48px;animation:floatBob 2.5s ease-in-out infinite}
+@keyframes floatBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.home-title{
+  font-size:42px;font-weight:900;
+  background:linear-gradient(135deg,#95d5b2,#52b788,#b7e4c7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:-1px;text-shadow:none;
+}
+.home-subtitle{font-size:15px;color:rgba(255,255,255,.65);letter-spacing:.5px}
+
+/* Mini house illustration on home */
+.home-house-preview{
+  position:relative;width:200px;height:160px;margin:8px auto;
+}
+.hp-sky{
+  position:absolute;bottom:40px;left:0;right:0;top:0;
+  background:linear-gradient(180deg,#1a3a5c 0%,#2d6a8f 100%);
+  border-radius:16px 16px 0 0;overflow:hidden;
+}
+.hp-star{position:absolute;font-size:12px;animation:twinkle 2s ease-in-out infinite}
+.hp-ground{
+  position:absolute;bottom:0;left:0;right:0;height:44px;
+  background:linear-gradient(180deg,#2d6a4f,#1b4332);
+  border-radius:0 0 16px 16px;
+}
+/* small house */
+.hp-house{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);width:80px}
+.hp-roof{
+  width:0;height:0;
+  border-left:46px solid transparent;border-right:46px solid transparent;
+  border-bottom:36px solid #8B0000;
+  position:relative;z-index:2;margin:0 auto;
+  filter:drop-shadow(0 -2px 4px rgba(0,0,0,.4));
+}
+.hp-walls{
+  width:80px;height:52px;
+  background:linear-gradient(180deg,#d4b896,#c4a882);
+  border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.hp-door-s{
+  width:16px;height:26px;
+  background:linear-gradient(180deg,#8B4513,#6B3410);
+  border-radius:8px 8px 0 0;
+  position:absolute;bottom:0;
+}
+.hp-win-s{
+  width:14px;height:14px;
+  background:rgba(120,180,255,.5);
+  border:2px solid #aaa;border-radius:2px;
+  position:absolute;top:10px;
+}
+.hp-win-s.l{left:10px}.hp-win-s.r{right:10px}
+/* trees beside house */
+.hp-tree{position:absolute;bottom:32px}
+.hp-tree.lt{left:18px}.hp-tree.rt{right:18px}
+.hp-trunk-s{width:8px;height:22px;background:#5c3d11;margin:0 auto;border-radius:2px}
+.hp-canopy-s{width:30px;height:30px;background:#2d6a4f;border-radius:50%;margin:0 auto}
+/* flowers */
+.hp-flowers{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-size:14px}
+
+.home-bottom{
+  width:100%;padding:24px 32px 48px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.btn-play-home{
+  width:100%;max-width:280px;
+  padding:16px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,#f4a261 0%,#e76f51 100%);
+  color:#fff;font-size:20px;font-weight:800;
+  letter-spacing:.5px;cursor:pointer;
+  box-shadow:0 6px 24px rgba(231,111,81,.5),0 2px 0 rgba(255,255,255,.2) inset;
+  transition:transform .1s,box-shadow .1s;
+}
+.btn-play-home:active{transform:scale(.95);box-shadow:0 2px 12px rgba(231,111,81,.4)}
+.home-meta{font-size:13px;color:rgba(255,255,255,.4)}
+
+/* ═══════════════════════════════════════════════════════════════
+   GARDEN SCREEN
+═══════════════════════════════════════════════════════════════ */
+#s-garden{
+  background:linear-gradient(180deg,#74c69d 0%,#52b788 40%,#40916c 100%);
+  overflow:hidden;
+}
+
+/* Top bar */
+.gd-topbar{
+  width:100%;padding:14px 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.gd-title{font-size:22px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.gd-stars-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.3);backdrop-filter:blur(8px);
+  padding:7px 16px;border-radius:50px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.gd-stars-pill .st-icon{font-size:20px}
+.gd-stars-pill .st-num{color:#ffd700;font-size:18px;font-weight:800}
+
+/* ── GARDEN SCENE ────────────────────────────────────────────── */
+.garden-scene{
+  width:100%;flex-shrink:0;
+  position:relative;height:230px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#b7e4c7 0%,#74c69d 60%,#52b788 100%);
+  transition:background 1.5s;
+}
+
+/* sky */
+.gs-sky{
+  position:absolute;top:0;left:0;right:0;height:100px;
+  background:linear-gradient(180deg,#6c757d 0%,#adb5bd 70%,#ced4da 100%);
+  transition:background 1.5s;overflow:hidden;
+}
+.r-sky .gs-sky{background:linear-gradient(180deg,#0077b6 0%,#90e0ef 70%,#caf0f8 100%)}
+.gs-sun{
+  position:absolute;top:14px;right:20px;
+  width:36px;height:36px;background:#ffd700;border-radius:50%;
+  box-shadow:0 0 20px #ffd700,0 0 40px rgba(255,215,0,.4);
+  opacity:0;transition:opacity 1.5s;
+}
+.r-sky .gs-sun{opacity:1}
+.gs-cloud{
+  position:absolute;height:24px;background:rgba(255,255,255,.6);border-radius:50px;
+  transition:background 1.5s;
+}
+.gs-cloud.c1{top:18px;left:12%;width:70px;animation:driftCloud 18s linear infinite}
+.gs-cloud.c2{top:28px;left:50%;width:50px;animation:driftCloud 24s linear infinite 4s}
+@keyframes driftCloud{0%{transform:translateX(0)}100%{transform:translateX(20px)}}
+
+/* ground */
+.gs-ground{
+  position:absolute;bottom:0;left:0;right:0;top:100px;
+  background:linear-gradient(180deg,#8B5E3C,#7a5230);
+  transition:background 1.5s;
+}
+.r-path .gs-ground{background:linear-gradient(180deg,#6b8f71,#52b788)}
+
+/* ── FENCE ───────────────────────────────────────────────────── */
+.gs-fence{
+  position:absolute;bottom:0;left:0;right:0;height:44px;
+  opacity:.4;transition:opacity 1s;
+}
+.r-fence .gs-fence{opacity:1}
+.gs-fence-rail{
+  position:absolute;left:0;right:0;height:5px;
+  background:#888;border-radius:2px;
+  transition:background 1s;
+}
+.r-fence .gs-fence-rail{background:#fff}
+.gs-fence-rail.top{bottom:30px}
+.gs-fence-rail.bot{bottom:14px}
+.gs-fence-post{
+  position:absolute;bottom:6px;width:8px;height:38px;
+  background:#888;border-radius:4px 4px 2px 2px;
+  transition:background 1s;
+}
+.r-fence .gs-fence-post{background:#f8f9fa}
+/* post positions */
+.fp0{left:4%}.fp1{left:14%}.fp2{left:24%}.fp3{left:34%}
+.fp4{left:44%}.fp5{left:54%}.fp6{left:64%}.fp7{left:74%}
+.fp8{left:84%}.fp9{left:94%}
+
+/* ── PATH ────────────────────────────────────────────────────── */
+.gs-path{
+  position:absolute;bottom:44px;left:50%;transform:translateX(-50%);
+  width:52px;
+  display:flex;flex-direction:column;gap:4px;align-items:center;
+}
+.gs-pstone{
+  height:9px;border-radius:4px;background:#6c757d;opacity:.5;
+  transition:background 1s,opacity 1s;
+}
+.gs-pstone:nth-child(odd){width:46px}
+.gs-pstone:nth-child(even){width:38px}
+.r-path .gs-pstone{background:#dee2e6;opacity:.9}
+
+/* ── TREES ───────────────────────────────────────────────────── */
+.gs-tree{
+  position:absolute;bottom:44px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.gs-tree.tl{left:4%}
+.gs-tree.tr{right:4%}
+.gs-trunk{
+  width:14px;height:36px;
+  background:#5c3d11;border-radius:4px 4px 2px 2px;
+  transition:height 1s;
+}
+.gs-canopy{
+  width:44px;height:44px;border-radius:50%;
+  background:#4a4a4a;margin-top:-8px;
+  transition:background 1s,width 1s,height 1s,margin 1s;
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,.3);
+}
+.r-trees .gs-trunk{height:46px}
+.r-trees .gs-canopy{
+  background:#2d6a4f;width:62px;height:62px;
+  box-shadow:inset 0 -6px 12px rgba(0,0,0,.25),0 2px 8px rgba(0,0,0,.2);
+}
+/* cherry blossoms */
+.gs-blossom{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  font-size:10px;opacity:0;transition:opacity 1s;
+}
+.r-flowers .gs-blossom{opacity:1}
+
+/* ── HOUSE ───────────────────────────────────────────────────── */
+.gs-house{
+  position:absolute;
+  bottom:44px;left:50%;transform:translateX(-50%);
+  width:120px;
+  transition:filter 1.5s;
+  filter:saturate(.1) brightness(.55);
+}
+.r-house .gs-house{filter:saturate(1) brightness(1)}
+
+.gs-chimney{
+  position:absolute;top:-28px;right:22px;
+  width:18px;height:28px;
+  background:#666;border-radius:2px 2px 0 0;
+  z-index:2;transition:background 1.5s;
+}
+.r-house .gs-chimney{background:#c0392b}
+.gs-chimney-smoke{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(200,200,200,.7);
+  opacity:0;transition:opacity 1s;
+  animation:smokeRise 2s ease-in-out infinite;
+}
+.r-house .gs-chimney-smoke{opacity:1}
+@keyframes smokeRise{0%{transform:translateX(-50%) translateY(0) scale(1);opacity:.7}100%{transform:translateX(-40%) translateY(-20px) scale(2);opacity:0}}
+
+.gs-roof{
+  width:0;height:0;
+  border-left:68px solid transparent;
+  border-right:68px solid transparent;
+  border-bottom:52px solid #555;
+  position:relative;z-index:2;
+  transition:border-bottom-color 1.5s;
+  filter:drop-shadow(0 -2px 4px rgba(0,0,0,.3));
+}
+.r-house .gs-roof{border-bottom-color:#c0392b}
+/* roof tiles */
+.gs-roof-detail{
+  position:absolute;bottom:0;left:-68px;right:-68px;
+  height:10px;
+  background:repeating-linear-gradient(90deg,transparent,transparent 12px,rgba(0,0,0,.2) 12px,rgba(0,0,0,.2) 14px);
+  transition:opacity 1s;opacity:0;
+}
+.r-house .gs-roof-detail{opacity:1}
+
+.gs-walls{
+  width:120px;height:70px;
+  background:linear-gradient(180deg,#9e9e9e,#8a8a8a);
+  position:relative;display:flex;align-items:flex-end;
+  justify-content:space-between;padding:0 8px;
+  transition:background 1.5s;
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,.2);
+}
+.r-house .gs-walls{background:linear-gradient(180deg,#f8f0e3,#ede0c8)}
+
+/* Cracks on walls */
+.gs-crack{
+  position:absolute;
+  background:rgba(0,0,0,.25);
+  transition:opacity 1s;
+}
+.gs-crack.c1{top:10px;left:14px;width:2px;height:22px;transform:rotate(-30deg)}
+.gs-crack.c2{top:18px;left:12px;width:1px;height:14px;transform:rotate(20deg);left:15px}
+.gs-crack.c3{top:8px;right:18px;width:2px;height:18px;transform:rotate(25deg)}
+.r-house .gs-crack{opacity:0}
+
+.gs-window{
+  width:24px;height:24px;
+  background:#2d2d2d;border-radius:3px;
+  margin-bottom:8px;position:relative;
+  border:2px solid #555;
+  overflow:visible;
+  transition:background 1.5s,border-color 1.5s;
+}
+.r-house .gs-window{background:rgba(135,206,250,.7);border-color:#aaa}
+/* broken X on window */
+.gs-window::before,.gs-window::after{
+  content:'';position:absolute;inset:2px;
+  background:linear-gradient(to bottom right,transparent 45%,rgba(0,0,0,.5) 45%,rgba(0,0,0,.5) 55%,transparent 55%);
+  transition:opacity 1s;
+}
+.gs-window::after{
+  background:linear-gradient(to bottom left,transparent 45%,rgba(0,0,0,.5) 45%,rgba(0,0,0,.5) 55%,transparent 55%);
+}
+.r-house .gs-window::before,.r-house .gs-window::after{opacity:0}
+/* curtains */
+.gs-curtain{
+  position:absolute;top:0;width:8px;height:18px;
+  border-radius:0 0 4px 4px;opacity:0;
+  transition:opacity 1s;
+}
+.gs-curtain.cl{left:0;background:linear-gradient(135deg,#e63946,#c1121f)}
+.gs-curtain.cr{right:0;background:linear-gradient(225deg,#e63946,#c1121f)}
+.r-house .gs-curtain{opacity:1}
+/* flower box */
+.gs-flowerbox{
+  position:absolute;bottom:-10px;left:-4px;right:-4px;height:8px;
+  background:#8B4513;border-radius:2px;opacity:0;
+  transition:opacity 1s;overflow:visible;
+}
+.gs-flowerbox::before{
+  content:'🌷';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  font-size:12px;
+}
+.r-house .gs-flowerbox{opacity:1}
+
+.gs-door{
+  width:26px;height:38px;
+  background:linear-gradient(180deg,#3a3a3a,#2a2a2a);
+  border-radius:13px 13px 0 0;
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  transition:background 1.5s;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.4);
+}
+.r-house .gs-door{background:linear-gradient(180deg,#2d6a4f,#1b4332)}
+.gs-doorknob{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  width:4px;height:4px;border-radius:50%;
+  background:#555;transition:background 1s;
+}
+.r-house .gs-doorknob{background:#ffd700}
+/* wreath on door */
+.gs-wreath{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  font-size:14px;opacity:0;transition:opacity 1s;
+}
+.r-house .gs-wreath{opacity:1}
+
+.gs-foundation{
+  width:124px;height:8px;
+  background:#888;margin-top:-2px;
+  border-radius:0 0 4px 4px;
+  transition:background 1s;
+}
+.r-house .gs-foundation{background:#ccc}
+/* steps */
+.gs-steps{
+  width:38px;height:6px;background:#777;
+  margin:0 auto;border-radius:0 0 3px 3px;
+  transition:background 1s;
+}
+.r-house .gs-steps{background:#ddd}
+
+/* ── FLOWER BEDS ─────────────────────────────────────────────── */
+.gs-flowerbed{
+  position:absolute;bottom:44px;
+  display:flex;gap:3px;align-items:flex-end;
+  transition:filter 1s;
+  filter:saturate(0) brightness(.5);
+}
+.gs-flowerbed.fbl{left:2%;bottom:48px}
+.gs-flowerbed.fbr{right:2%;bottom:48px}
+.r-flowers .gs-flowerbed{filter:saturate(1) brightness(1)}
+.gs-fl{font-size:18px;transition:opacity .5s;opacity:0}
+.r-flowers .gs-fl{opacity:1}
+.gs-fl:nth-child(2){transition-delay:.1s}
+.gs-fl:nth-child(3){transition-delay:.2s}
+.gs-fl:nth-child(4){transition-delay:.3s}
+
+/* ── FOUNTAIN ────────────────────────────────────────────────── */
+.gs-fountain{
+  position:absolute;
+  /* pushed to left side so it doesn't overlap house */
+  bottom:56px;left:2%;
+  transition:filter 1s;
+  filter:saturate(0) brightness(.4);
+}
+.r-fountain .gs-fountain{filter:saturate(1) brightness(1)}
+.gs-fount-basin{
+  width:44px;height:14px;
+  background:linear-gradient(180deg,#9db4b4,#7a9494);
+  border-radius:50%;
+  position:relative;
+}
+.gs-fount-post{
+  width:8px;height:20px;
+  background:#7a9494;
+  margin:0 auto;border-radius:2px;
+}
+.gs-fount-top{
+  width:22px;height:8px;
+  background:#9db4b4;
+  border-radius:50%;margin:0 auto;
+}
+.gs-fount-water{
+  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  width:6px;height:14px;
+  background:rgba(100,180,255,.7);border-radius:3px;
+  opacity:0;transition:opacity 1s;
+  animation:waterDrop 1.2s ease-in-out infinite;
+}
+.r-fountain .gs-fount-water{opacity:1}
+@keyframes waterDrop{0%,100%{height:14px;top:-4px}50%{height:20px;top:-10px}}
+
+/* ── BENCH ───────────────────────────────────────────────────── */
+.gs-bench{
+  position:absolute;bottom:52px;right:3%;
+  opacity:0;transition:opacity 1s;
+}
+.r-fence .gs-bench{opacity:1}
+.gs-bench-seat{
+  width:32px;height:5px;background:#8B4513;border-radius:2px;
+}
+.gs-bench-legs{
+  display:flex;justify-content:space-between;
+  width:32px;
+}
+.gs-bench-leg{
+  width:4px;height:10px;background:#6B3410;
+}
+
+/* ── STRING LIGHTS ───────────────────────────────────────────── */
+.gs-lights{
+  position:absolute;top:95px;left:0;right:0;
+  opacity:0;transition:opacity 1.5s;pointer-events:none;
+}
+.r-lights .gs-lights{opacity:1}
+.gs-light-wire{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:rgba(100,100,100,.5);
+}
+.gs-bulb{
+  position:absolute;top:0px;
+  width:8px;height:10px;border-radius:0 0 4px 4px;
+  animation:bulbGlow 1.5s ease-in-out infinite var(--d);
+}
+@keyframes bulbGlow{0%,100%{opacity:.8}50%{opacity:1;box-shadow:0 0 8px currentColor}}
+.gb1{left:8%;background:#ff6b6b;color:#ff6b6b;--d:0s}
+.gb2{left:20%;background:#ffd32a;color:#ffd32a;--d:.2s}
+.gb3{left:32%;background:#55efc4;color:#55efc4;--d:.4s}
+.gb4{left:44%;background:#74b9ff;color:#74b9ff;--d:.6s}
+.gb5{left:56%;background:#fd79a8;color:#fd79a8;--d:.8s}
+.gb6{left:68%;background:#ff6b6b;color:#ff6b6b;--d:1s}
+.gb7{left:80%;background:#ffd32a;color:#ffd32a;--d:1.2s}
+.gb8{left:90%;background:#55efc4;color:#55efc4;--d:1.4s}
+
+/* ── BRUNO CHARACTER ─────────────────────────────────────────── */
+.bruno-wrap{
+  position:absolute;bottom:46px;right:10px;
+  display:flex;flex-direction:column;align-items:center;
+  width:54px;
+}
+/* speech bubble */
+.b-speech{
+  background:#fff;border-radius:12px;padding:6px 8px;
+  font-size:10px;font-weight:600;color:#2d3436;
+  line-height:1.3;text-align:center;
+  max-width:120px;white-space:nowrap;
+  position:absolute;bottom:calc(100% + 6px);right:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+  opacity:1;transition:opacity .5s;
+  transform-origin:bottom right;
+}
+.b-speech::after{
+  content:'';position:absolute;bottom:-6px;right:10px;
+  border:6px solid transparent;border-top-color:#fff;border-bottom:none;
+}
+
+/* Hat */
+.b-hat{position:relative;width:38px;margin:0 auto}
+.b-hat-top{
+  width:26px;height:16px;
+  background:linear-gradient(180deg,#c8a86b,#a68a4f);
+  border-radius:6px 6px 0 0;margin:0 auto;
+  box-shadow:inset 0 2px 4px rgba(255,255,255,.3);
+}
+.b-hat-brim{
+  width:38px;height:6px;
+  background:linear-gradient(180deg,#a68a4f,#8B6914);
+  border-radius:3px;
+}
+.b-hat-band{
+  position:absolute;bottom:6px;left:6px;right:6px;height:4px;
+  background:#e74c3c;border-radius:1px;
+}
+
+/* Head */
+.b-head{
+  width:34px;height:34px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#FDBF87,#E8A06A);
+  margin:0 auto;position:relative;overflow:visible;
+  box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+/* ears */
+.b-head::before,.b-head::after{
+  content:'';position:absolute;
+  width:8px;height:12px;border-radius:50%;
+  background:radial-gradient(circle,#FDBF87,#E8A06A);
+  top:10px;
+}
+.b-head::before{left:-4px}
+.b-head::after{right:-4px}
+/* eyes */
+.b-eyes{
+  position:absolute;top:10px;left:0;right:0;
+  display:flex;justify-content:center;gap:8px;
+}
+.b-eye{
+  width:5px;height:6px;background:#2d2d2d;border-radius:50%;
+  position:relative;
+  transition:height .3s;
+}
+/* happy: wider, with sparkle */
+.bruno.happy .b-eye{height:5px;border-radius:3px}
+/* sad: angled */
+.b-eye::after{
+  content:'';position:absolute;top:-1px;left:0;right:0;height:2px;
+  background:#FDBF87;border-radius:1px;
+  transform-origin:left center;
+  transition:transform .3s;
+}
+.bruno.sad .b-eye.l::after{transform:rotate(15deg)}
+.bruno.sad .b-eye.r::after{transform:rotate(-15deg)}
+
+/* mouth */
+.b-mouth{
+  position:absolute;bottom:7px;left:50%;transform:translateX(-50%);
+  width:14px;height:7px;
+  border:2.5px solid #c0392b;border-top:none;
+  border-radius:0 0 14px 14px;
+  transition:all .3s;
+}
+.bruno.happy .b-mouth{width:18px;height:10px;border-width:3px}
+.bruno.sad .b-mouth{
+  border-radius:14px 14px 0 0;border-top:2.5px solid #c0392b;border-bottom:none;
+  bottom:auto;top:18px;
+}
+/* blush */
+.b-blush{
+  position:absolute;bottom:9px;width:7px;height:5px;
+  background:rgba(255,120,120,.4);border-radius:50%;
+  transition:opacity .3s;
+}
+.b-blush.l{left:3px}
+.b-blush.r{right:3px}
+.bruno.happy .b-blush{background:rgba(255,120,120,.65)}
+
+/* Body / overalls */
+.b-body{
+  width:30px;height:28px;
+  background:linear-gradient(180deg,#3a86ff,#2667cc);
+  border-radius:6px 6px 4px 4px;
+  margin:1px auto 0;position:relative;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+/* overall straps */
+.b-body::before,.b-body::after{
+  content:'';position:absolute;top:-5px;
+  width:5px;height:10px;
+  background:#3a86ff;border-radius:2px;
+}
+.b-body::before{left:5px}
+.b-body::after{right:5px}
+/* pocket */
+.b-pocket{
+  position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:10px;height:8px;border-radius:3px;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+}
+
+/* Arms */
+.b-arms{display:flex;justify-content:space-between;width:46px;margin:0 auto;margin-top:-24px;position:relative;z-index:-1}
+.b-arm{
+  width:10px;height:22px;
+  background:linear-gradient(180deg,#3a86ff,#2667cc);
+  border-radius:5px;
+  transition:transform .4s;
+}
+.b-arm.l{border-radius:5px 2px 5px 5px;transform-origin:top right}
+.b-arm.r{border-radius:2px 5px 5px 5px;transform-origin:top left}
+.bruno.wave .b-arm.r{animation:waveArm 1.5s ease-in-out infinite}
+.bruno.happy .b-arm.l{transform:rotate(-35deg)}
+.bruno.happy .b-arm.r{transform:rotate(35deg)}
+.bruno.sad .b-arm.l{transform:rotate(25deg)}
+.bruno.sad .b-arm.r{transform:rotate(-25deg)}
+@keyframes waveArm{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}75%{transform:rotate(20deg)}}
+
+/* Hands */
+.b-hand{
+  width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle,#FDBF87,#E8A06A);
+  margin-top:1px;
+}
+
+/* Legs */
+.b-legs{display:flex;gap:4px;justify-content:center;margin-top:0}
+.b-leg{
+  width:11px;height:16px;
+  background:linear-gradient(180deg,#2d2d2d,#1a1a1a);
+  border-radius:2px 2px 4px 4px;
+}
+.b-shoe{width:13px;height:6px;background:#1a1a1a;border-radius:3px;margin-top:-1px}
+.b-shoe.ls{margin-left:-1px}
+.b-shoe.rs{margin-right:-1px}
+
+/* Idle bounce */
+.bruno{animation:brunoBounce 2.5s ease-in-out infinite}
+@keyframes brunoBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* ── TASKS LIST ──────────────────────────────────────────────── */
+.tasks-scroll{
+  flex:1;width:100%;padding:6px 12px 8px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:8px;
+  -webkit-overflow-scrolling:touch;
+}
+.tasks-scroll::-webkit-scrollbar{width:3px}
+.tasks-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:2px}
+
+.task-card{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.13);
+  border:2px solid rgba(255,255,255,.18);
+  border-radius:18px;padding:12px 14px;
+  backdrop-filter:blur(10px);
+  transition:all .2s;
+}
+.task-card.available{
+  background:rgba(244,162,97,.22);
+  border-color:rgba(244,162,97,.55);
+  box-shadow:0 2px 12px rgba(244,162,97,.2);
+}
+.task-card.done{
+  background:rgba(52,183,136,.22);
+  border-color:rgba(52,183,136,.45);
+}
+.tc-icon{font-size:36px;flex-shrink:0}
+.tc-info{flex:1;min-width:0}
+.tc-name{font-size:14px;font-weight:700;color:#fff}
+.tc-desc{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;line-height:1.4}
+.tc-action{flex-shrink:0;text-align:center}
+.tc-cost{font-size:13px;font-weight:700;color:#ffd700;display:flex;align-items:center;gap:3px;justify-content:center}
+.btn-do{
+  display:block;margin-top:5px;
+  background:linear-gradient(135deg,#f4a261,#e76f51);
+  color:#fff;border:none;border-radius:20px;
+  padding:5px 14px;font-size:12px;font-weight:700;
+  cursor:pointer;transition:transform .1s;
+  box-shadow:0 2px 8px rgba(231,111,81,.4);
+}
+.btn-do:active{transform:scale(.92)}
+.tc-done-badge{font-size:26px}
+
+.gd-playbar{
+  width:100%;padding:8px 12px 12px;flex-shrink:0;
+}
+.btn-play-garden{
+  width:100%;padding:14px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,#52b788,#2d6a4f);
+  color:#fff;font-size:18px;font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(52,183,136,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .1s;
+}
+.btn-play-garden:active{transform:scale(.97)}
+
+/* ═══════════════════════════════════════════════════════════════
+   GAME SCREEN
+═══════════════════════════════════════════════════════════════ */
+#s-game{
+  background:linear-gradient(180deg,#0d2818 0%,#081c15 100%);
+}
+
+/* top bar */
+.gm-top{
+  width:100%;padding:10px 14px 4px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.gm-back{
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.1);color:#fff;font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .1s;
+}
+.gm-back:active{background:rgba(255,255,255,.2)}
+.gm-center{flex:1;text-align:center}
+.gm-lvlnum{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase}
+.gm-lvlname{font-size:15px;font-weight:700;color:#fff;margin-top:1px}
+.gm-lives{display:flex;gap:3px}
+.gm-heart{font-size:16px;transition:all .3s}
+.gm-heart.empty{filter:grayscale(1);opacity:.25}
+
+/* stats */
+.gm-stats{
+  width:100%;padding:2px 14px 4px;
+  display:flex;gap:8px;flex-shrink:0;
+}
+.stat-card{
+  flex:1;padding:7px 10px;
+  background:rgba(255,255,255,.07);
+  border-radius:14px;text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+}
+.stat-card .sl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.stat-card .sv{font-size:24px;font-weight:900;color:#fff;line-height:1}
+
+/* objectives */
+.gm-objs{
+  width:100%;padding:2px 14px 4px;
+  display:flex;gap:7px;flex-wrap:wrap;justify-content:center;
+  flex-shrink:0;
+}
+.obj-pill{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.09);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:5px 10px;
+  transition:all .3s;
+}
+.obj-pill.done{
+  background:rgba(52,183,136,.25);
+  border-color:rgba(52,183,136,.5);
+}
+.obj-pill .oi{font-size:17px}
+.obj-pill .oval{font-size:13px;font-weight:700;color:#fff}
+.obj-pill.done .oval{color:#95d5b2}
+
+/* progress */
+.gm-prog{
+  width:calc(100% - 28px);margin:0 14px 4px;
+  background:rgba(255,255,255,.08);border-radius:50px;
+  height:7px;flex-shrink:0;overflow:hidden;
+}
+.gm-prog-fill{
+  height:100%;border-radius:50px;
+  background:linear-gradient(90deg,#52b788,#95d5b2);
+  transition:width .4s ease;
+}
+
+/* board */
+.gm-board-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:2px 10px;min-height:0;
+}
+#board{
+  position:relative;border-radius:20px;
+  background:rgba(0,0,0,.4);padding:8px;
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(0,0,0,.3);
+}
+.no-moves-banner{
+  position:absolute;inset:0;border-radius:20px;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#fff;
+  opacity:0;pointer-events:none;transition:opacity .3s;z-index:30;
+}
+.no-moves-banner.show{opacity:1}
+
+/* ── TILES ───────────────────────────────────────────────────── */
+.tile{
+  position:absolute;cursor:pointer;border-radius:14px;
+  transition:top .18s ease,left .18s ease,transform .12s;
+  will-change:top,left,transform;
+}
+.tile-body{
+  width:100%;height:100%;border-radius:14px;
+  position:relative;overflow:hidden;
+  box-shadow:
+    inset 0 -5px 10px rgba(0,0,0,.3),
+    inset 0 2px 4px rgba(255,255,255,.25),
+    0 4px 10px rgba(0,0,0,.35);
+}
+/* gloss */
+.tile-body::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:46%;
+  background:rgba(255,255,255,.28);
+  border-radius:14px 14px 60% 60%;
+  pointer-events:none;z-index:2;
+}
+/* bottom shadow */
+.tile-body::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:30%;
+  background:rgba(0,0,0,.18);
+  pointer-events:none;
+}
+.tile-emoji{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;z-index:1;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.4));
+}
+/* colors */
+.tc0{background:linear-gradient(160deg,#ff6b6b 0%,#c0392b 100%)}
+.tc1{background:linear-gradient(160deg,#74b9ff 0%,#0984e3 100%)}
+.tc2{background:linear-gradient(160deg,#ffeaa7 0%,#fdcb6e 100%)}
+.tc3{background:linear-gradient(160deg,#a29bfe 0%,#6c5ce7 100%)}
+.tc4{background:linear-gradient(160deg,#55efc4 0%,#00b894 100%)}
+.tc5{background:linear-gradient(160deg,#fd79a8 0%,#e84393 100%)}
+
+/* special tiles */
+.ts-sh .tile-body::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent 0px,transparent 6px,rgba(255,255,255,.35) 6px,rgba(255,255,255,.35) 8px);
+  height:100%;
+}
+.ts-sv .tile-body::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0px,transparent 6px,rgba(255,255,255,.35) 6px,rgba(255,255,255,.35) 8px);
+  width:100%;height:100%;
+}
+.ts-bomb .tile-body{box-shadow:inset 0 0 20px rgba(255,255,255,.5),0 4px 10px rgba(0,0,0,.35)}
+.ts-rainbow{
+  background:linear-gradient(135deg,#ff6b6b,#ffeaa7,#55efc4,#74b9ff,#a29bfe,#fd79a8)!important;
+  background-size:300% 300%!important;
+  animation:rbShift 2s linear infinite;
+}
+@keyframes rbShift{0%{background-position:0 0}100%{background-position:300% 300%}}
+
+/* tile states */
+.tile.sel{
+  transform:scale(1.16)!important;z-index:20;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.8));
+}
+.tile.pop{animation:tilePop .28s ease forwards;z-index:18}
+@keyframes tilePop{0%{transform:scale(1);opacity:1}45%{transform:scale(1.3);opacity:.7}100%{transform:scale(0);opacity:0}}
+.tile.wobble{animation:tileWobble .38s ease}
+@keyframes tileWobble{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.tile.spawn{animation:tileSpawn .22s ease}
+@keyframes tileSpawn{0%{transform:scale(.3);opacity:0}65%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+
+/* boosters */
+.gm-bsts{
+  width:100%;padding:5px 14px 12px;
+  display:flex;gap:8px;justify-content:center;flex-shrink:0;
+}
+.bst-btn{
+  flex:1;max-width:105px;
+  background:rgba(255,255,255,.1);
+  border:2px solid rgba(255,255,255,.15);
+  border-radius:16px;padding:8px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  cursor:pointer;transition:all .15s;
+}
+.bst-btn:active{transform:scale(.9)}
+.bst-btn.on{
+  border-color:#ffd700;
+  background:rgba(255,215,0,.15);
+  box-shadow:0 0 16px rgba(255,215,0,.3);
+}
+.bst-btn.off{opacity:.35;pointer-events:none}
+.bst-icon{font-size:26px}
+.bst-label{font-size:10px;color:rgba(255,255,255,.65);font-weight:600}
+.bst-count{font-size:12px;font-weight:800;color:#ffd700}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERLAYS
+═══════════════════════════════════════════════════════════════ */
+.ov{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.ov.show{opacity:1;pointer-events:all}
+.ov-card{
+  background:linear-gradient(155deg,#1e3a2f 0%,#0d2818 100%);
+  border-radius:28px;padding:30px 24px;text-align:center;
+  width:84%;max-width:340px;
+  box-shadow:0 30px 70px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.1);
+}
+.ov-icon{font-size:72px;margin-bottom:8px}
+.ov-title{font-size:32px;font-weight:900;color:#fff;margin-bottom:6px}
+.ov-sub{font-size:14px;color:rgba(255,255,255,.65);margin-bottom:22px;line-height:1.6}
+.ov-stars{font-size:36px;letter-spacing:5px;margin-bottom:16px}
+.ov-score{font-size:22px;font-weight:800;color:#ffd700;margin-bottom:8px}
+.ov-btns{display:flex;gap:10px;justify-content:center}
+.btn-ov{
+  padding:12px 22px;border:none;border-radius:50px;
+  font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s;
+}
+.btn-ov:active{transform:scale(.94)}
+.btn-ov.primary{
+  background:linear-gradient(135deg,#f4a261,#e76f51);color:#fff;
+  box-shadow:0 4px 16px rgba(231,111,81,.45);
+}
+.btn-ov.secondary{
+  background:rgba(255,255,255,.12);color:#fff;
+  border:2px solid rgba(255,255,255,.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FX
+═══════════════════════════════════════════════════════════════ */
+.score-pop{
+  position:absolute;font-size:17px;font-weight:900;
+  color:#ffd700;text-shadow:0 2px 8px rgba(0,0,0,.7);
+  pointer-events:none;z-index:60;
+  animation:sfloat .7s ease forwards;
+}
+@keyframes sfloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-52px) scale(.7)}}
+
+.spark{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:55;
+  animation:sparkFly .55s ease forwards;
+}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+
+.combo-banner{
+  position:fixed;left:50%;top:28%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#f4a261,#e76f51);
+  color:#fff;font-size:22px;font-weight:900;
+  padding:10px 30px;border-radius:50px;
+  box-shadow:0 6px 30px rgba(231,111,81,.6);
+  z-index:300;pointer-events:none;
+  animation:comboPop .85s ease forwards;
+}
+@keyframes comboPop{0%{opacity:0;transform:translateX(-50%) scale(.4)}18%{transform:translateX(-50%) scale(1.2)}35%,75%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(.85)}}
+
+/* renovation celebration flash */
+.reno-flash{
+  position:fixed;inset:0;background:rgba(255,215,0,.35);
+  pointer-events:none;z-index:400;
+  animation:renoFlash .6s ease forwards;
+}
+@keyframes renoFlash{0%{opacity:1}100%{opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HOME ══ -->
+<div id="s-home" class="screen active">
+  <div class="home-bg-stars" id="homeBgStars"></div>
+
+  <div class="home-top">
+    <div class="home-logo-flowers">🌸🌺🌼</div>
+    <div class="home-title">Garden Dreams</div>
+    <div class="home-subtitle">Combine • Conquiste • Renove</div>
+
+    <!-- Mini house preview (CSS art) -->
+    <div class="home-house-preview">
+      <div class="hp-sky">
+        <div class="hp-star" style="top:20%;left:15%;--d:1.8s;--del:0s;width:2px;height:2px"></div>
+        <div class="hp-star" style="top:30%;left:55%;--d:2.3s;--del:.5s;width:3px;height:3px"></div>
+        <div class="hp-star" style="top:15%;left:75%;--d:1.5s;--del:1s;width:2px;height:2px"></div>
+      </div>
+      <div class="hp-ground"></div>
+      <!-- left tree -->
+      <div class="hp-tree lt">
+        <div class="hp-canopy-s" style="background:#2d6a4f"></div>
+        <div class="hp-trunk-s"></div>
+      </div>
+      <!-- house -->
+      <div class="hp-house">
+        <div class="hp-roof"></div>
+        <div class="hp-walls">
+          <div class="hp-win-s l"></div>
+          <div class="hp-door-s"></div>
+          <div class="hp-win-s r"></div>
+        </div>
+      </div>
+      <!-- right tree -->
+      <div class="hp-tree rt">
+        <div class="hp-canopy-s" style="background:#2d6a4f"></div>
+        <div class="hp-trunk-s"></div>
+      </div>
+      <div class="hp-flowers">🌸 🌹 🌻</div>
+    </div>
+  </div>
+
+  <div class="home-bottom">
+    <button class="btn-play-home" onclick="G.go('garden')">▶ Jogar</button>
+    <div class="home-meta">Toque nas peças • Combine 3 ou mais</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ GARDEN ══ -->
+<div id="s-garden" class="screen">
+  <div class="gd-topbar">
+    <div class="gd-title">🌿 Meu Jardim</div>
+    <div class="gd-stars-pill">
+      <span class="st-icon">⭐</span>
+      <span class="st-num" id="gdStars">0</span>
+    </div>
+  </div>
+
+  <!-- ── SCENE ── -->
+  <div class="garden-scene" id="gardenScene">
+    <div class="gs-sky">
+      <div class="gs-cloud c1"></div>
+      <div class="gs-cloud c2"></div>
+      <div class="gs-sun"></div>
+    </div>
+
+    <!-- String lights -->
+    <div class="gs-lights">
+      <div class="gs-light-wire"></div>
+      <div class="gs-bulb gb1"></div><div class="gs-bulb gb2"></div>
+      <div class="gs-bulb gb3"></div><div class="gs-bulb gb4"></div>
+      <div class="gs-bulb gb5"></div><div class="gs-bulb gb6"></div>
+      <div class="gs-bulb gb7"></div><div class="gs-bulb gb8"></div>
+    </div>
+
+    <div class="gs-ground"></div>
+
+    <!-- Fence -->
+    <div class="gs-fence">
+      <div class="gs-fence-rail top"></div>
+      <div class="gs-fence-rail bot"></div>
+      <div class="gs-fence-post fp0"></div>
+      <div class="gs-fence-post fp1"></div>
+      <div class="gs-fence-post fp2"></div>
+      <div class="gs-fence-post fp3"></div>
+      <div class="gs-fence-post fp4"></div>
+      <div class="gs-fence-post fp5"></div>
+      <div class="gs-fence-post fp6"></div>
+      <div class="gs-fence-post fp7"></div>
+      <div class="gs-fence-post fp8"></div>
+      <div class="gs-fence-post fp9"></div>
+    </div>
+
+    <!-- Left tree -->
+    <div class="gs-tree tl">
+      <div class="gs-canopy"><div class="gs-blossom">🌸</div></div>
+      <div class="gs-trunk"></div>
+    </div>
+
+    <!-- House -->
+    <div class="gs-house" id="gsHouse">
+      <div class="gs-chimney"><div class="gs-chimney-smoke"></div></div>
+      <div class="gs-roof"><div class="gs-roof-detail"></div></div>
+      <div class="gs-walls">
+        <div class="gs-crack c1"></div>
+        <div class="gs-crack c2"></div>
+        <div class="gs-crack c3"></div>
+        <div class="gs-window">
+          <div class="gs-curtain cl"></div>
+          <div class="gs-curtain cr"></div>
+          <div class="gs-flowerbox"></div>
+        </div>
+        <div class="gs-door">
+          <div class="gs-doorknob"></div>
+          <div class="gs-wreath">🎄</div>
+        </div>
+        <div class="gs-window">
+          <div class="gs-curtain cl"></div>
+          <div class="gs-curtain cr"></div>
+          <div class="gs-flowerbox"></div>
+        </div>
+      </div>
+      <div class="gs-foundation"></div>
+      <div class="gs-steps"></div>
+    </div>
+
+    <!-- Right tree -->
+    <div class="gs-tree tr">
+      <div class="gs-canopy"><div class="gs-blossom">🌸</div></div>
+      <div class="gs-trunk"></div>
+    </div>
+
+    <!-- Path -->
+    <div class="gs-path">
+      <div class="gs-pstone"></div>
+      <div class="gs-pstone"></div>
+      <div class="gs-pstone"></div>
+      <div class="gs-pstone"></div>
+    </div>
+
+    <!-- Fountain (left side) -->
+    <div class="gs-fountain" id="gsFountain">
+      <div class="gs-fount-top"></div>
+      <div class="gs-fount-post"></div>
+      <div class="gs-fount-basin">
+        <div class="gs-fount-water"></div>
+      </div>
+    </div>
+
+    <!-- Bench (right side) -->
+    <div class="gs-bench" id="gsBench">
+      <div class="gs-bench-seat"></div>
+      <div class="gs-bench-legs">
+        <div class="gs-bench-leg"></div>
+        <div class="gs-bench-leg"></div>
+      </div>
+    </div>
+
+    <!-- Left flower bed -->
+    <div class="gs-flowerbed fbl" id="gsFbl">
+      <div class="gs-fl">🌹</div>
+      <div class="gs-fl">🌷</div>
+      <div class="gs-fl">🌸</div>
+      <div class="gs-fl">🌺</div>
+    </div>
+
+    <!-- Right flower bed -->
+    <div class="gs-flowerbed fbr" id="gsFbr">
+      <div class="gs-fl">🌻</div>
+      <div class="gs-fl">🌼</div>
+      <div class="gs-fl">🌸</div>
+      <div class="gs-fl">🌷</div>
+    </div>
+
+    <!-- Bruno the gardener -->
+    <div class="bruno-wrap">
+      <div class="bruno wave" id="bruno">
+        <div class="b-speech" id="brunoSpeech">Vamos renovar!</div>
+        <div class="b-hat">
+          <div class="b-hat-top"></div>
+          <div class="b-hat-band"></div>
+          <div class="b-hat-brim"></div>
+        </div>
+        <div class="b-head">
+          <div class="b-eyes">
+            <div class="b-eye l"></div>
+            <div class="b-eye r"></div>
+          </div>
+          <div class="b-mouth"></div>
+          <div class="b-blush l"></div>
+          <div class="b-blush r"></div>
+        </div>
+        <div class="b-arms">
+          <div>
+            <div class="b-arm l"></div>
+            <div class="b-hand"></div>
+          </div>
+          <div>
+            <div class="b-arm r"></div>
+            <div class="b-hand"></div>
+          </div>
+        </div>
+        <div class="b-body">
+          <div class="b-pocket"></div>
+        </div>
+        <div class="b-legs">
+          <div class="b-leg"></div>
+          <div class="b-leg"></div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <div class="b-shoe ls"></div>
+          <div class="b-shoe rs"></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /garden-scene -->
+
+  <div class="tasks-scroll" id="tasksList"></div>
+
+  <div class="gd-playbar">
+    <button class="btn-play-garden" onclick="G.playNext()">
+      ⚡ Jogar — Nível <span id="nextLvlNum">1</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ GAME ══ -->
+<div id="s-game" class="screen">
+  <div class="gm-top">
+    <button class="gm-back" onclick="G.go('garden')">←</button>
+    <div class="gm-center">
+      <div class="gm-lvlnum" id="gmLvlNum">NÍVEL 1</div>
+      <div class="gm-lvlname" id="gmLvlName">Despertar do Jardim</div>
+    </div>
+    <div class="gm-lives" id="gmLives"></div>
+  </div>
+
+  <div class="gm-stats">
+    <div class="stat-card"><div class="sl">Pontos</div><div class="sv" id="gmScore">0</div></div>
+    <div class="stat-card"><div class="sl">Movimentos</div><div class="sv" id="gmMoves">20</div></div>
+  </div>
+
+  <div class="gm-objs" id="gmObjs"></div>
+
+  <div class="gm-prog"><div class="gm-prog-fill" id="gmProgFill" style="width:0%"></div></div>
+
+  <div class="gm-board-wrap">
+    <div id="board">
+      <div class="no-moves-banner" id="noMovesBanner">🔄 Embaralhando…</div>
+    </div>
+  </div>
+
+  <div class="gm-bsts">
+    <div class="bst-btn" id="bstHammer" onclick="G.bst('hammer')">
+      <div class="bst-icon">🔨</div>
+      <div class="bst-label">Martelo</div>
+      <div class="bst-count" id="bstHammerN">×3</div>
+    </div>
+    <div class="bst-btn" id="bstBomb" onclick="G.bst('bomb')">
+      <div class="bst-icon">💣</div>
+      <div class="bst-label">Bomba</div>
+      <div class="bst-count" id="bstBombN">×3</div>
+    </div>
+    <div class="bst-btn" id="bstRainbow" onclick="G.bst('rainbow')">
+      <div class="bst-icon">🌈</div>
+      <div class="bst-label">Arco-Íris</div>
+      <div class="bst-count" id="bstRainbowN">×3</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════ OVERLAYS ════════ -->
+<div id="ovWin" class="ov">
+  <div class="ov-card">
+    <div class="ov-icon">🎉</div>
+    <div class="ov-title">Parabéns!</div>
+    <div class="ov-stars" id="ovWinStars">⭐⭐⭐</div>
+    <div class="ov-score" id="ovWinScore">+2 estrelas!</div>
+    <div class="ov-sub" id="ovWinMsg">Continue renovando seu jardim!</div>
+    <div class="ov-btns">
+      <button class="btn-ov secondary" onclick="G.go('garden')">🏡 Jardim</button>
+      <button class="btn-ov primary" onclick="G.nextLvl()">Próximo ▶</button>
+    </div>
+  </div>
+</div>
+
+<div id="ovLose" class="ov">
+  <div class="ov-card">
+    <div class="ov-icon">🥀</div>
+    <div class="ov-title">Sem Movimentos!</div>
+    <div class="ov-sub">O jardim ainda precisa de você!<br>Não desanime — tente de novo!</div>
+    <div class="ov-btns">
+      <button class="btn-ov secondary" onclick="G.go('garden')">← Voltar</button>
+      <button class="btn-ov primary" onclick="G.retry()">🔄 Tentar Novamente</button>
+    </div>
+  </div>
+</div>
+
+<div id="ovNoLives" class="ov">
+  <div class="ov-card">
+    <div class="ov-icon">❤️‍🔥</div>
+    <div class="ov-title">Sem Vidas!</div>
+    <div class="ov-sub">Suas vidas se regeneram com o tempo.<br>Volte em alguns minutos!</div>
+    <div class="ov-btns">
+      <button class="btn-ov primary" onclick="G.closeOv('ovNoLives')">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   GARDEN DREAMS — Complete Match-3 Game
+   v2.0 — Progressive garden renovation with Bruno
+================================================================ */
+const G = (() => {
+'use strict';
+
+// ── CONSTANTS ────────────────────────────────────────────────────
+const COLS = 7, ROWS = 7, N_TYPES = 6, MAX_LIVES = 5;
+const EMOJIS   = ['🌸','💧','☀️','🔮','🌿','🍓'];
+const TCOLORS  = ['tc0','tc1','tc2','tc3','tc4','tc5'];
+
+// ── LEVEL DATA ───────────────────────────────────────────────────
+const LEVELS = [
+  {id:1,name:'Despertar do Jardim',moves:28,
+   obj:[{type:'collect',tt:0,need:18,lbl:'🌸'},{type:'collect',tt:1,need:14,lbl:'💧'}],
+   thr:[3000,6500,11000]},
+  {id:2,name:'Luz do Sol',moves:25,
+   obj:[{type:'collect',tt:2,need:22,lbl:'☀️'},{type:'collect',tt:3,need:16,lbl:'🔮'}],
+   thr:[4000,8000,13000]},
+  {id:3,name:'Brisa Verde',moves:22,
+   obj:[{type:'collect',tt:4,need:28,lbl:'🌿'},{type:'score',need:5000,lbl:'⭐'}],
+   thr:[5000,9000,14000]},
+  {id:4,name:'Frutos Silvestres',moves:24,
+   obj:[{type:'collect',tt:5,need:22,lbl:'🍓'},{type:'collect',tt:0,need:18,lbl:'🌸'}],
+   thr:[5500,10000,15000]},
+  {id:5,name:'Arco-Íris',moves:20,
+   obj:[{type:'collect',tt:0,need:15,lbl:'🌸'},{type:'collect',tt:2,need:15,lbl:'☀️'},{type:'collect',tt:4,need:15,lbl:'🌿'}],
+   thr:[6000,11000,17000]},
+  {id:6,name:'Névoa da Manhã',moves:22,
+   obj:[{type:'collect',tt:1,need:32,lbl:'💧'},{type:'score',need:8000,lbl:'⭐'}],
+   thr:[7000,12000,18000]},
+  {id:7,name:'Cristais Mágicos',moves:18,
+   obj:[{type:'collect',tt:3,need:28,lbl:'🔮'},{type:'collect',tt:5,need:18,lbl:'🍓'}],
+   thr:[8000,13000,20000]},
+  {id:8,name:'Grande Florada',moves:16,
+   obj:[{type:'score',need:12000,lbl:'⭐'},{type:'collect',tt:0,need:28,lbl:'🌸'}],
+   thr:[9000,15000,22000]},
+  {id:9,name:'Sonho de Verão',moves:15,
+   obj:[{type:'collect',tt:2,need:18,lbl:'☀️'},{type:'collect',tt:1,need:18,lbl:'💧'},{type:'collect',tt:4,need:18,lbl:'🌿'}],
+   thr:[10000,17000,25000]},
+  {id:10,name:'Jardim Perfeito',moves:20,
+   obj:[{type:'score',need:20000,lbl:'⭐'}],
+   thr:[14000,22000,30000]},
+];
+
+// ── GARDEN TASKS ─────────────────────────────────────────────────
+// visual: CSS class added to #gardenScene when task is done
+const TASKS = [
+  {id:0,icon:'🌹',name:'Plantar Rosas',   desc:'Canteiros floridos por toda parte',cost:1, visual:'r-flowers'},
+  {id:1,icon:'🪑',name:'Reformar o Banco', desc:'Um banco charmoso para descansar', cost:1, visual:'r-fence'},
+  {id:2,icon:'⛲',name:'Restaurar a Fonte',desc:'A bela fonte borbulhante voltou!', cost:2, visual:'r-fountain'},
+  {id:3,icon:'🌳',name:'Podar as Árvores', desc:'Frondosas e cheias de vida',        cost:1, visual:'r-trees'},
+  {id:4,icon:'🌸',name:'Flores de Cerejeira',desc:'Pétalas rosadas no caminho',      cost:2, visual:'r-path'},
+  {id:5,icon:'💡',name:'Luzes no Jardim',  desc:'Luzes feericas ao entardecer',      cost:2, visual:'r-lights'},
+  {id:6,icon:'🌤️',name:'Céu Limpo',        desc:'Sol brilhante sobre o jardim',      cost:3, visual:'r-sky'},
+  {id:7,icon:'🏡',name:'Reformar a Casa',  desc:'A casa ganha nova vida e cor!',     cost:2, visual:'r-house'},
+];
+
+// Bruno speeches by renovation count
+const BRUNO_SPEECHES = [
+  'Que lugar abandonado… vamos recuperar juntos! 😔',
+  'Boa! Já está melhorando! 😊',
+  'Que diferença! Continue assim! 🌱',
+  'Uau, está ficando lindo! ✨',
+  'Quase perfeito! Só mais um pouco! 🌟',
+  'Incrível! O jardim está vivo! 🌺',
+  'Estou tão feliz com este lugar! 🎉',
+  'Que jardim maravilhoso! 🌸',
+  'MEU JARDIM DOS SONHOS! 🏆🌈',
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+const st = {
+  screen:'home',
+  lives:MAX_LIVES, stars:3,
+  curLvl:0, doneL:[], doneT:[],
+  board:[], score:0, moves:0, objs:[],
+  sel:null, bstActive:null,
+  bsts:{hammer:3,bomb:3,rainbow:3},
+  busy:false, combo:0,
+  TSIZ:46, TGAP:3, uid:0,
+};
+
+// ── UTILS ────────────────────────────────────────────────────────
+const $  = id => document.getElementById(id);
+const rn = n  => Math.floor(Math.random() * n);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// ── HOME SCREEN STARS ────────────────────────────────────────────
+(function spawnHomeStars() {
+  const c = $('homeBgStars');
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('div');
+    s.className = 'hstar';
+    const sz = rn(3) + 1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${rn(100)}%;left:${rn(100)}%;--d:${1.5+rn(30)/10}s;--del:${rn(30)/10}s`;
+    c.appendChild(s);
+  }
+})();
+
+// ── TILE FACTORY ─────────────────────────────────────────────────
+function mkTile(row, col, type) {
+  if (type == null) type = rn(N_TYPES);
+  return {id:st.uid++, type, sp:null, row, col, el:null};
+}
+
+// ── BOARD INIT ───────────────────────────────────────────────────
+function initBoard() {
+  st.board = [];
+  for (let r = 0; r < ROWS; r++) {
+    st.board[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      let t, tries = 0;
+      do { t = rn(N_TYPES); tries++; }
+      while (tries < 15 && wouldMatch(st.board, r, c, t));
+      st.board[r][c] = mkTile(r, c, t);
+    }
+  }
+}
+
+function wouldMatch(board, r, c, type) {
+  if (c >= 2 && board[r][c-1]?.type === type && board[r][c-2]?.type === type) return true;
+  if (r >= 2 && board[r-1]?.[c]?.type === type && board[r-2]?.[c]?.type === type) return true;
+  return false;
+}
+
+// ── MATCH DETECTION ──────────────────────────────────────────────
+function findMatches() {
+  const hits = new Set(); const hruns = [], vruns = [];
+  for (let r = 0; r < ROWS; r++) {
+    let s = 0;
+    for (let c = 1; c <= COLS; c++) {
+      const p = st.board[r][c-1], q = c<COLS ? st.board[r][c] : null;
+      if (!q || !p || q.type !== p.type) {
+        if (c - s >= 3) { const run = []; for (let i=s;i<c;i++){run.push({r,c:i,dir:'h',len:c-s});hits.add(`${r},${i}`);} hruns.push(run); }
+        s = c;
+      }
+    }
+  }
+  for (let c = 0; c < COLS; c++) {
+    let s = 0;
+    for (let r = 1; r <= ROWS; r++) {
+      const p = st.board[r-1]?.[c], q = r<ROWS ? st.board[r]?.[c] : null;
+      if (!q || !p || q.type !== p.type) {
+        if (r - s >= 3) { const run = []; for (let i=s;i<r;i++){run.push({r:i,c,dir:'v',len:r-s});hits.add(`${i},${c}`);} vruns.push(run); }
+        s = r;
+      }
+    }
+  }
+  return {hits, hruns, vruns};
+}
+
+function planSpecials(hruns, vruns, pivKey) {
+  const specs = []; const inter = new Set();
+  hruns.forEach(hr => vruns.forEach(vr => hr.forEach(hp => vr.forEach(vp => {
+    if (hp.r===vp.r && hp.c===vp.c) inter.add(`${hp.r},${hp.c}`);
+  }))));
+
+  const addSpec = run => {
+    if (run.length < 4) return;
+    // Prefer the swapped-tile position (like match-three-js keeps the "moved" orb)
+    let piv = run[Math.floor(run.length/2)];
+    const sw = run.find(p=>`${p.r},${p.c}`===pivKey); if(sw) piv=sw;
+    if (specs.find(s=>s.r===piv.r&&s.c===piv.c)) return;
+    const t = st.board[piv.r][piv.c]; if(!t) return;
+
+    // Priority rule (inspired by match-three-js triples.combine + Candy Crush rules):
+    //   5+ in a line → rainbow (always, even at a T/L intersection)
+    //   4  in a line at an intersection → bomb (two runs of 4 crossing)
+    //   4  in a line (simple)           → stripe
+    let sp;
+    if (run.length >= 5) {
+      sp = 'ts-rainbow';
+    } else if (run.length === 4 && inter.has(`${piv.r},${piv.c}`)) {
+      sp = 'ts-bomb';
+    } else {
+      sp = run[0].dir==='h' ? 'ts-sh' : 'ts-sv';
+    }
+    specs.push({r:piv.r, c:piv.c, type:t.type, sp});
+  };
+  hruns.forEach(addSpec); vruns.forEach(addSpec);
+
+  // Any intersection not already covered by a 4+ run pivot gets a bomb
+  inter.forEach(key => {
+    const [r,c]=key.split(',').map(Number);
+    if (!specs.find(s=>s.r===r&&s.c===c)){const t=st.board[r][c];if(t)specs.push({r,c,type:t.type,sp:'ts-bomb'});}
+  });
+  return specs;
+}
+
+function expandExplosions(initial) {
+  const all = new Set(initial); let changed = true;
+  while (changed) {
+    changed = false;
+    all.forEach(key => {
+      const [r,c]=key.split(',').map(Number); const t=st.board[r][c]; if(!t) return;
+      if (t.sp==='ts-sh') { for(let cc=0;cc<COLS;cc++){const k=`${r},${cc}`;if(!all.has(k)){all.add(k);changed=true;}} }
+      else if (t.sp==='ts-sv') { for(let rr=0;rr<ROWS;rr++){const k=`${rr},${c}`;if(!all.has(k)){all.add(k);changed=true;}} }
+      else if (t.sp==='ts-bomb') { for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS){const k=`${nr},${nc}`;if(!all.has(k)){all.add(k);changed=true;}}} }
+      else if (t.sp==='ts-rainbow') { const tt=t.type; for(let rr=0;rr<ROWS;rr++)for(let cc=0;cc<COLS;cc++){if(st.board[rr][cc]?.type===tt){const k=`${rr},${cc}`;if(!all.has(k)){all.add(k);changed=true;}}} }
+    });
+  }
+  return all;
+}
+
+// ── RENDER BOARD ─────────────────────────────────────────────────
+function calcSizes() {
+  const maxW = Math.min(window.innerWidth - 32, 400);
+  st.TGAP = 3;
+  st.TSIZ = Math.floor((maxW - (COLS-1)*st.TGAP) / COLS);
+}
+
+function tPos(row, col) {
+  return {
+    left: col*(st.TSIZ+st.TGAP) + 8,
+    top:  row*(st.TSIZ+st.TGAP) + 8,
+  };
+}
+
+function renderBoard() {
+  const bel = $('board');
+  bel.innerHTML = '<div class="no-moves-banner" id="noMovesBanner">🔄 Embaralhando…</div>';
+  const bp = COLS*st.TSIZ + (COLS-1)*st.TGAP;
+  bel.style.width = (bp+16)+'px'; bel.style.height = (bp+16)+'px';
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(st.board[r][c]) mountTile(st.board[r][c]);
+}
+
+function tileBodyClass(tile) {
+  let cls = 'tile-body';
+  if (tile.sp==='ts-rainbow') cls += ' ' + tile.sp;
+  else cls += ' ' + TCOLORS[tile.type] + (tile.sp ? ' '+tile.sp : '');
+  return cls;
+}
+
+function tileEmojiStr(tile) {
+  if (tile.sp==='ts-rainbow') return '🌈';
+  if (tile.sp==='ts-bomb')    return '💣';
+  if (tile.sp==='ts-sh'||tile.sp==='ts-sv') return '⚡';
+  return EMOJIS[tile.type];
+}
+
+function mountTile(tile, offRows) {
+  const bel = $('board');
+  const el = document.createElement('div');
+  const pos = tPos(tile.row, tile.col);
+  const initTop = offRows != null ? pos.top - offRows*(st.TSIZ+st.TGAP) : pos.top;
+
+  el.className = 'tile';
+  el.id = 'T'+tile.id;
+  el.style.cssText = `width:${st.TSIZ}px;height:${st.TSIZ}px;left:${pos.left}px;top:${initTop}px;`;
+
+  const body = document.createElement('div');
+  body.className = tileBodyClass(tile);
+
+  const emoji = document.createElement('div');
+  emoji.className = 'tile-emoji';
+  emoji.style.fontSize = Math.round(st.TSIZ * 0.52) + 'px';
+  emoji.textContent = tileEmojiStr(tile);
+
+  body.appendChild(emoji);
+  el.appendChild(body);
+  bel.appendChild(el);
+  tile.el = el;
+
+  el.addEventListener('pointerdown', e => { e.preventDefault(); onPD(tile, e); });
+  return el;
+}
+
+function moveTileEl(tile) {
+  if (!tile.el) return;
+  const pos = tPos(tile.row, tile.col);
+  tile.el.style.left = pos.left+'px'; tile.el.style.top = pos.top+'px';
+}
+
+function refreshTileEl(tile) {
+  if (!tile.el) return;
+  const body = tile.el.querySelector('.tile-body');
+  if (body) { body.className = tileBodyClass(tile); const em = body.querySelector('.tile-emoji'); if(em) em.textContent = tileEmojiStr(tile); }
+  moveTileEl(tile);
+}
+
+// ── INPUT ────────────────────────────────────────────────────────
+let _dt=null, _ds=null;
+
+function onPD(tile, e) {
+  if (st.busy) return;
+  if (st.bstActive) { applyBooster(tile); return; }
+  _dt = tile; _ds = {x:e.clientX, y:e.clientY};
+
+  const onMove = me => {
+    if (!_dt) return;
+    const dx=me.clientX-_ds.x, dy=me.clientY-_ds.y;
+    if (Math.abs(dx) > st.TSIZ*.28 || Math.abs(dy) > st.TSIZ*.28) {
+      let dr=0,dc=0;
+      Math.abs(dx)>Math.abs(dy) ? dc=dx>0?1:-1 : dr=dy>0?1:-1;
+      const nr=tile.row+dr, nc=tile.col+dc;
+      if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS) { const o=st.board[nr][nc]; if(o) trySwap(tile,o); }
+      cleanup();
+    }
+  };
+  const onUp = () => { if(_dt) onTap(tile); cleanup(); };
+  const cleanup = () => { _dt=null;_ds=null; document.removeEventListener('pointermove',onMove); document.removeEventListener('pointerup',onUp); };
+  document.addEventListener('pointermove', onMove, {passive:false});
+  document.addEventListener('pointerup', onUp);
+}
+
+function onTap(tile) {
+  if (!st.sel) { doSel(tile); return; }
+  if (st.sel===tile) { deDeSel(); return; }
+  const dr=Math.abs(st.sel.row-tile.row), dc=Math.abs(st.sel.col-tile.col);
+  const prev=st.sel; deDeSel();
+  if (dr+dc===1) trySwap(prev,tile); else doSel(tile);
+}
+
+function doSel(tile)  { st.sel=tile; tile.el?.classList.add('sel'); }
+function deDeSel()    { st.sel?.el?.classList.remove('sel'); st.sel=null; }
+
+// ── SWAP ─────────────────────────────────────────────────────────
+async function trySwap(a, b) {
+  if (st.busy) return;
+  st.busy = true; deDeSel();
+  swapPos(a,b); moveTileEl(a); moveTileEl(b);
+  await wait(200);
+
+  const {hits,hruns,vruns} = findMatches();
+  if (hits.size === 0) {
+    swapPos(a,b); moveTileEl(a); moveTileEl(b);
+    a.el?.classList.add('wobble'); b.el?.classList.add('wobble');
+    await wait(420); a.el?.classList.remove('wobble'); b.el?.classList.remove('wobble');
+    st.busy = false; return;
+  }
+
+  st.moves--; st.combo = 0;
+  await cascade(hits,hruns,vruns,`${b.row},${b.col}`);
+  updateHUD(); checkEnd(); st.busy = false;
+}
+
+function swapPos(a, b) {
+  st.board[a.row][a.col] = b; st.board[b.row][b.col] = a;
+  [a.row,b.row]=[b.row,a.row]; [a.col,b.col]=[b.col,a.col];
+}
+
+// ── CASCADE ──────────────────────────────────────────────────────
+async function cascade(hits, hruns, vruns, pivKey) {
+  st.combo++;
+  if (st.combo >= 3) showComboBanner(st.combo);
+
+  const specs   = planSpecials(hruns, vruns, pivKey);
+  const expanded = expandExplosions(hits);
+
+  // score
+  const pts = Math.round(expanded.size * 65 * (st.combo>1 ? 1+st.combo*.25 : 1));
+  st.score += pts;
+
+  // objectives
+  expanded.forEach(key => {
+    const [r,c]=key.split(',').map(Number); const t=st.board[r][c]; if(!t) return;
+    st.objs.forEach(o => {
+      if (o.done) return;
+      if (o.type==='collect'&&o.tt===t.type) { o.got=(o.got||0)+1; if(o.got>=o.need) o.done=true; }
+    });
+  });
+  st.objs.forEach(o => { if(o.type==='score'&&!o.done&&st.score>=o.need) o.done=true; });
+
+  // animate out
+  const rps = [];
+  expanded.forEach(key => {
+    const [r,c]=key.split(',').map(Number); const t=st.board[r][c]; if(!t) return;
+    spawnFX(t);
+    st.board[r][c] = null;
+    if (t.el) { t.el.classList.add('pop'); rps.push(new Promise(res=>setTimeout(()=>{t.el?.remove();t.el=null;res();},280))); }
+  });
+  await Promise.all(rps);
+
+  // place specials
+  specs.forEach(({r,c,type,sp}) => {
+    if (st.board[r][c]===null) {
+      const nt=mkTile(r,c,type); nt.sp=sp; st.board[r][c]=nt;
+      mountTile(nt); nt.el?.classList.add('spawn'); setTimeout(()=>nt.el?.classList.remove('spawn'),250);
+    }
+  });
+
+  await gravity();
+  await fillNew();
+  updateHUD();
+
+  const next = findMatches();
+  if (next.hits.size>0) { await wait(120); await cascade(next.hits,next.hruns,next.vruns,null); }
+  else if (!hasPotentialMatch()) await shuffle();
+}
+
+// ── GRAVITY ──────────────────────────────────────────────────────
+async function gravity() {
+  let moved = false;
+  for (let c=0;c<COLS;c++) {
+    let empty = ROWS-1;
+    for (let r=ROWS-1;r>=0;r--) {
+      if (st.board[r][c]) {
+        if (r!==empty) { const t=st.board[r][c]; st.board[empty][c]=t; st.board[r][c]=null; t.row=empty; moveTileEl(t); moved=true; }
+        empty--;
+      }
+    }
+  }
+  if (moved) await wait(200);
+}
+
+// ── FILL ─────────────────────────────────────────────────────────
+async function fillNew() {
+  const fresh = [];
+  for (let c=0;c<COLS;c++) {
+    let drop=0;
+    for (let r=0;r<ROWS;r++) {
+      if (!st.board[r][c]) { drop++; const t=mkTile(r,c,rn(N_TYPES)); st.board[r][c]=t; fresh.push({t,drop}); }
+    }
+  }
+  if (!fresh.length) return;
+  fresh.forEach(({t,drop}) => mountTile(t,drop));
+  await new Promise(res=>requestAnimationFrame(()=>requestAnimationFrame(res)));
+  fresh.forEach(({t}) => moveTileEl(t));
+  await wait(260);
+}
+
+// ── VALID MOVES ──────────────────────────────────────────────────
+// Inspired by match-three-js orbs.ts hasPotentialMatch():
+// Slide 4-wide windows across rows/cols — O(n) vs the old O(n²) swap-test approach.
+// Never mutates board state; returns false only when board is truly deadlocked.
+function hasPotentialMatch() {
+  function cntMax(tiles) {
+    const c={};
+    tiles.forEach(t=>{if(t) c[t.type]=(c[t.type]||0)+1;});
+    const v=Object.values(c); return v.length ? Math.max(...v) : 0;
+  }
+
+  // Single-line 4-wide windows: if any type appears 3+ times, one swap can complete a match
+  for (let r=0;r<ROWS;r++)
+    for (let c=0;c<=COLS-4;c++)
+      if (cntMax([st.board[r][c],st.board[r][c+1],st.board[r][c+2],st.board[r][c+3]])>=3) return true;
+  for (let c=0;c<COLS;c++)
+    for (let r=0;r<=ROWS-4;r++)
+      if (cntMax([st.board[r][c],st.board[r+1][c],st.board[r+2][c],st.board[r+3][c]])>=3) return true;
+
+  // Pair-of-adjacent-lines check (inspired by hasPotentialMatchInPairOfRows):
+  // Patterns like [A,B,A,_] / [_,A,B,A] across two lines need just one swap to match.
+  function pairPotential(a, b) {
+    const vals = new Set([...a,...b].map(t=>t?.type).filter(v=>v!=null));
+    for (const v of vals) {
+      const pos = new Set([
+        ...a.map((t,i)=>t?.type===v?i:-1),
+        ...b.map((t,i)=>t?.type===v?i:-1)
+      ].filter(i=>i>=0));
+      const s=[...pos].sort((x,y)=>x-y);
+      if (s.length>=3 && ((s[0]===0&&s[1]===1&&s[2]===2)||(s[0]===1&&s[1]===2&&s[2]===3))) return true;
+    }
+    return false;
+  }
+  for (let r=0;r<ROWS-1;r++)
+    for (let c=0;c<=COLS-4;c++)
+      if (pairPotential(
+        [st.board[r][c],st.board[r][c+1],st.board[r][c+2],st.board[r][c+3]],
+        [st.board[r+1][c],st.board[r+1][c+1],st.board[r+1][c+2],st.board[r+1][c+3]]
+      )) return true;
+  for (let c=0;c<COLS-1;c++)
+    for (let r=0;r<=ROWS-4;r++)
+      if (pairPotential(
+        [st.board[r][c],st.board[r+1][c],st.board[r+2][c],st.board[r+3][c]],
+        [st.board[r][c+1],st.board[r+1][c+1],st.board[r+2][c+1],st.board[r+3][c+1]]
+      )) return true;
+
+  return false;
+}
+
+// Inspired by match-three-js orbs.ts unmatch():
+// Surgically removes pre-existing matches by swapping the median tile's TYPE
+// (not the tile object) with a neighbor of a different type.
+// Tile objects (and DOM elements) stay in place — only .type changes.
+function unmatchBoard() {
+  let attempts = 0;
+  while (attempts++ < 200) {
+    const {hits, hruns, vruns} = findMatches();
+    if (hits.size === 0) break;
+    for (const run of [...hruns, ...vruns]) {
+      const mid = run[Math.floor(run.length/2)];
+      const tile = st.board[mid.r][mid.c]; if(!tile) continue;
+
+      // Shuffle 4 directions (like match-three-js _.shuffle(['up','down','left','right']))
+      const dirs=[{dr:-1,dc:0},{dr:1,dc:0},{dr:0,dc:-1},{dr:0,dc:1}];
+      for(let i=dirs.length-1;i>0;i--){const j=rn(i+1);[dirs[i],dirs[j]]=[dirs[j],dirs[i]];}
+
+      let fixed=false;
+      for(const {dr,dc} of dirs){
+        const nr=mid.r+dr, nc=mid.c+dc;
+        if(nr<0||nr>=ROWS||nc<0||nc>=COLS) continue;
+        const nb=st.board[nr][nc];
+        if(nb && nb.type!==tile.type){[tile.type,nb.type]=[nb.type,tile.type];fixed=true;break;}
+      }
+      if(!fixed){
+        // skipToRandom fallback (match-three-js's skipToRandom path)
+        let t=0;
+        while(t++<30){
+          const rr=rn(ROWS),rc=rn(COLS),rt=st.board[rr][rc];
+          if(rt&&rt.type!==tile.type){[tile.type,rt.type]=[rt.type,tile.type];break;}
+        }
+      }
+    }
+  }
+}
+
+async function shuffle() {
+  const nm=$('noMovesBanner'); if(nm) nm.classList.add('show');
+  await wait(700);
+
+  // Shuffle tile TYPES only (like match-three-js _.map(orbs, row => _.shuffle(row))),
+  // keeping tile objects and DOM elements in their positions — no CSS transitions needed.
+  const types=[];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(st.board[r][c]) types.push(st.board[r][c].type);
+  for(let i=types.length-1;i>0;i--){const j=rn(i+1);[types[i],types[j]]=[types[j],types[i]];}
+  let idx=0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(st.board[r][c]) st.board[r][c].type=types[idx++];
+
+  // Surgically remove any resulting matches (match-three-js Board.unmatch())
+  unmatchBoard();
+
+  // Refresh visuals for all tiles whose type may have changed
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(st.board[r][c]) refreshTileEl(st.board[r][c]);
+
+  await wait(280); if(nm) nm.classList.remove('show');
+
+  // Retry if still no potential moves (match-three-js Board.needsShuffle())
+  if(!hasPotentialMatch()) await shuffle();
+}
+
+// ── BOOSTERS ─────────────────────────────────────────────────────
+function bst(type) {
+  if (st.busy) return;
+  if (st.bsts[type]<=0) return;
+  st.bstActive = st.bstActive===type ? null : type;
+  updateBoostUI();
+}
+
+async function applyBooster(tile) {
+  const type=st.bstActive; if(!type||st.bsts[type]<=0) return;
+  st.bstActive=null; st.bsts[type]--; updateBoostUI();
+  st.busy = true;
+  const toRm = new Set();
+  if (type==='hammer') toRm.add(`${tile.row},${tile.col}`);
+  else if (type==='bomb') { for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=tile.row+dr,nc=tile.col+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS)toRm.add(`${nr},${nc}`);} }
+  else if (type==='rainbow') { const tt=tile.type; for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(st.board[r][c]?.type===tt)toRm.add(`${r},${c}`); }
+
+  toRm.forEach(key => {
+    const [r,c]=key.split(',').map(Number); const t=st.board[r][c]; if(!t) return;
+    st.objs.forEach(o=>{if(o.done)return;if(o.type==='collect'&&o.tt===t.type){o.got=(o.got||0)+1;if(o.got>=o.need)o.done=true;}});
+    st.score+=120; spawnFX(t); st.board[r][c]=null;
+    if(t.el){t.el.classList.add('pop');setTimeout(()=>{t.el?.remove();t.el=null;},280);}
+  });
+  st.objs.forEach(o=>{if(o.type==='score'&&!o.done&&st.score>=o.need)o.done=true;});
+
+  await wait(310); await gravity(); await fillNew();
+  const {hits,hruns,vruns}=findMatches();
+  if(hits.size>0){st.combo=0;await cascade(hits,hruns,vruns,null);}
+  updateHUD(); checkEnd(); st.busy=false;
+}
+
+// ── WIN / LOSE ────────────────────────────────────────────────────
+function checkEnd() {
+  if (st.objs.every(o=>o.done)) { setTimeout(doWin,350); return; }
+  if (st.moves<=0)               { setTimeout(doLose,350); }
+}
+
+function doWin() {
+  const lv=LEVELS[st.curLvl];
+  const earned = st.score>=lv.thr[2]?3 : st.score>=lv.thr[1]?2 : 1;
+  st.stars += earned;
+  if (!st.doneL.includes(st.curLvl)) st.doneL.push(st.curLvl);
+  $('ovWinStars').textContent = '⭐'.repeat(earned)+'☆'.repeat(3-earned);
+  $('ovWinScore').textContent  = `+${earned} estrela${earned>1?'s':''}! Total: ${st.stars}⭐`;
+  $('ovWinMsg').textContent    = `Continue renovando seu jardim!`;
+  showOv('ovWin');
+  setBrunoMood('happy');
+}
+
+function doLose() {
+  st.lives = Math.max(0, st.lives-1);
+  showOv('ovLose');
+  setBrunoMood('sad');
+}
+
+function nextLvl() {
+  closeOv('ovWin');
+  st.curLvl = Math.min(st.curLvl+1, LEVELS.length-1);
+  startLevel(st.curLvl);
+}
+
+function retry() {
+  closeOv('ovLose');
+  if (st.lives<=0) { showOv('ovNoLives'); return; }
+  startLevel(st.curLvl);
+}
+
+// ── LEVEL START ───────────────────────────────────────────────────
+function startLevel(idx) {
+  const lv = LEVELS[idx];
+  st.curLvl=idx; st.score=0; st.moves=lv.moves;
+  st.sel=null; st.bstActive=null; st.busy=false; st.combo=0;
+  st.objs = lv.obj.map(o=>({...o,got:0,done:false}));
+  calcSizes(); initBoard(); renderBoard();
+  $('gmLvlNum').textContent  = `NÍVEL ${lv.id}`;
+  $('gmLvlName').textContent = lv.name;
+  updateHUD(); go('game');
+}
+
+function playNext() {
+  if (st.lives<=0) { showOv('ovNoLives'); return; }
+  startLevel(Math.min(st.doneL.length, LEVELS.length-1));
+}
+
+// ── HUD ───────────────────────────────────────────────────────────
+function updateHUD() {
+  $('gmScore').textContent  = st.score.toLocaleString('pt-BR');
+  $('gmMoves').textContent  = st.moves;
+  $('gdStars').textContent  = st.stars;
+  $('nextLvlNum').textContent = Math.min(st.doneL.length+1, LEVELS.length);
+
+  // lives
+  const lr=$('gmLives'); lr.innerHTML='';
+  for(let i=0;i<MAX_LIVES;i++){const h=document.createElement('span');h.className='gm-heart'+(i<st.lives?'':' empty');h.textContent='❤️';lr.appendChild(h);}
+
+  // objectives
+  const or=$('gmObjs'); or.innerHTML='';
+  st.objs.forEach(o=>{
+    const pill=document.createElement('div'); pill.className='obj-pill'+(o.done?' done':'');
+    const oi=document.createElement('span');oi.className='oi';
+    const oval=document.createElement('span');oval.className='oval';
+    if(o.type==='collect'){oi.textContent=EMOJIS[o.tt];oval.textContent=o.done?'✓':`×${Math.max(0,o.need-(o.got||0))}`;}
+    else{oi.textContent='⭐';oval.textContent=o.done?'✓':`${st.score.toLocaleString()}/${o.need.toLocaleString()}`;}
+    pill.appendChild(oi);pill.appendChild(oval);or.appendChild(pill);
+  });
+
+  // progress
+  const done=st.objs.filter(o=>o.done).length;
+  $('gmProgFill').style.width=`${(done/st.objs.length)*100}%`;
+
+  updateBoostUI();
+}
+
+function updateBoostUI() {
+  [['hammer','Hammer'],['bomb','Bomb'],['rainbow','Rainbow']].forEach(([type])=>{
+    const B=type.charAt(0).toUpperCase()+type.slice(1);
+    const btn=$('bst'+B), cnt=$('bst'+B+'N');
+    if(!btn) return;
+    btn.classList.toggle('on', st.bstActive===type);
+    btn.classList.toggle('off', st.bsts[type]<=0 && st.bstActive!==type);
+    if(cnt) cnt.textContent='×'+st.bsts[type];
+  });
+}
+
+// ── GARDEN VISUAL ─────────────────────────────────────────────────
+function updateGarden() {
+  $('gdStars').textContent = st.stars;
+  $('nextLvlNum').textContent = Math.min(st.doneL.length+1, LEVELS.length);
+
+  // Apply renovation visual classes
+  const scene = $('gardenScene');
+  TASKS.forEach(task => {
+    if (st.doneT.includes(task.id)) scene.classList.add(task.visual);
+    else scene.classList.remove(task.visual);
+  });
+
+  // Bruno speech
+  const count = st.doneT.length;
+  const speech = BRUNO_SPEECHES[Math.min(count, BRUNO_SPEECHES.length-1)];
+  $('brunoSpeech').textContent = speech;
+  setBrunoMood(count >= 6 ? 'happy' : count === 0 ? '' : '');
+
+  // Rebuild task list
+  const list=$('tasksList'); list.innerHTML='';
+  TASKS.forEach(task=>{
+    const done=st.doneT.includes(task.id);
+    const can=!done&&st.stars>=task.cost;
+    const card=document.createElement('div');
+    card.className='task-card '+(done?'done':can?'available':'');
+    card.innerHTML=`
+      <div class="tc-icon">${task.icon}</div>
+      <div class="tc-info">
+        <div class="tc-name">${task.name}</div>
+        <div class="tc-desc">${task.desc}</div>
+      </div>
+      <div class="tc-action">
+        ${done
+          ? '<div class="tc-done-badge">✅</div>'
+          : `<div class="tc-cost">⭐${task.cost}</div>${can?`<button class="btn-do" onclick="G.doTask(${task.id})">Fazer</button>`:''}`
+        }
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function doTask(id) {
+  const task=TASKS.find(t=>t.id===id);
+  if (!task||st.doneT.includes(id)||st.stars<task.cost) return;
+  st.stars -= task.cost;
+  st.doneT.push(id);
+  // celebration flash
+  const flash=document.createElement('div'); flash.className='reno-flash';
+  document.body.appendChild(flash); setTimeout(()=>flash.remove(),650);
+  updateGarden();
+  setBrunoMood('happy');
+  setTimeout(()=>setBrunoMood(''), 3000);
+}
+
+// ── BRUNO MOOD ────────────────────────────────────────────────────
+function setBrunoMood(mood) {
+  const b=$('bruno'); if(!b) return;
+  b.classList.remove('happy','sad','wave');
+  if (mood) b.classList.add(mood);
+  else b.classList.add('wave');
+}
+
+// ── SCREENS / OVERLAYS ───────────────────────────────────────────
+function go(name) {
+  document.querySelectorAll('div.ov').forEach(o=>o.classList.remove('show'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+name)?.classList.add('active');
+  st.screen = name;
+  if (name==='garden') updateGarden();
+}
+
+function showOv(id)  { $(id)?.classList.add('show'); }
+function closeOv(id) { $(id)?.classList.remove('show'); }
+
+// ── FX ───────────────────────────────────────────────────────────
+function spawnFX(tile) {
+  if (!tile.el) return;
+  const bel=$('board'); if(!bel) return;
+  const br=bel.getBoundingClientRect(), tr=tile.el.getBoundingClientRect();
+  const cx=tr.left-br.left+st.TSIZ/2, cy=tr.top-br.top+st.TSIZ/2;
+
+  // score popup
+  const pop=document.createElement('div'); pop.className='score-pop';
+  pop.textContent='+'+(tile.sp?140:65);
+  pop.style.cssText=`left:${cx-16}px;top:${cy-10}px`; bel.appendChild(pop);
+  setTimeout(()=>pop.remove(),720);
+
+  // sparks
+  const palette=['#ff6b6b','#ffd32a','#55efc4','#74b9ff','#a29bfe','#fd79a8','#fff'];
+  for(let i=0;i<7;i++){
+    const s=document.createElement('div'); s.className='spark';
+    const ang=(i/7)*Math.PI*2, dist=22+rn(20);
+    s.style.cssText=`left:${cx}px;top:${cy}px;width:${5+rn(4)}px;height:${5+rn(4)}px;background:${palette[i%palette.length]};--dx:${(Math.cos(ang)*dist).toFixed(1)}px;--dy:${(Math.sin(ang)*dist).toFixed(1)}px`;
+    bel.appendChild(s); setTimeout(()=>s.remove(),570);
+  }
+}
+
+function showComboBanner(n) {
+  const msgs=['','','','Combo! 🔥','Super Combo! ⚡','INCRÍVEL! 💫','IMPOSSÍVEL! 🌈'];
+  const msg=msgs[Math.min(n,msgs.length-1)]; if(!msg) return;
+  const div=document.createElement('div'); div.className='combo-banner'; div.textContent=msg;
+  document.body.appendChild(div); setTimeout(()=>div.remove(),870);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+function init() {
+  calcSizes();
+  window.addEventListener('resize',()=>{calcSizes();if(st.screen==='game')renderBoard();});
+  document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+}
+init();
+
+return {go, playNext, startLevel, bst, doTask, nextLvl, retry, closeOv};
+})();
+</script>
+</body>
+</html>
